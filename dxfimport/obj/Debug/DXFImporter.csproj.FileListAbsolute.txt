@@ -1,0 +1,9 @@
+C:\Users\gmein\Documents\GitHub\cad_source_code\obj\Debug\DXFImporter.Canvas.resources
+C:\Users\gmein\Documents\GitHub\cad_source_code\obj\Debug\DXFImporter.MainGUI.resources
+C:\Users\gmein\Documents\GitHub\cad_source_code\obj\Debug\DXFImporter.csproj.GenerateResource.cache
+C:\Users\gmein\Documents\GitHub\cad_source_code\obj\Debug\DXFImporter.csproj.CoreCompileInputs.cache
+C:\Users\gmein\Documents\GitHub\cad_source_code\bin\Debug\DXFImporter.exe.config
+C:\Users\gmein\Documents\GitHub\cad_source_code\bin\Debug\DXFImporter.exe
+C:\Users\gmein\Documents\GitHub\cad_source_code\bin\Debug\DXFImporter.pdb
+C:\Users\gmein\Documents\GitHub\cad_source_code\obj\Debug\DXFImporter.exe
+C:\Users\gmein\Documents\GitHub\cad_source_code\obj\Debug\DXFImporter.pdb
