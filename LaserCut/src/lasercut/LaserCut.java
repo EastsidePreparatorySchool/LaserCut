@@ -5,31 +5,13 @@
  */
 package lasercut;
 
-import com.sun.jna.Platform;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.collections.ObservableSet;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.print.PageLayout;
-import javafx.print.PageOrientation;
-import javafx.print.Paper;
 import javafx.print.Printer;
-import javafx.print.PrinterJob;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcTo;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.HLineTo;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.QuadCurveTo;
-import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -37,27 +19,33 @@ import com.sun.jna.platform.win32.WinDef.HDC;
 import java.io.InputStream;
 import java.util.List;
 import javafx.scene.Group;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 
 /**
  *
  * @author gmein
  */
 public class LaserCut extends Application {
-    
+
     static GraphicsInterface gi = GraphicsInterface.INSTANCE;
     static Group group;
+    static List<GraphicsObject> lgo;
 
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Parse");
-        btn.setOnAction((e)->parse());
+        Button btn = new Button("Parse");
+        btn.setOnAction((e) -> parse());
+        Button btn2 = new Button("Print");
+        btn2.setOnAction((e) -> print());
+        HBox btns = new HBox(btn, btn2);
+
         VBox vb = new VBox();
         group = new Group();
-        StackPane p = new StackPane (group);
+        StackPane p = new StackPane(group);
         p.setMinSize(300, 300);
-        vb.getChildren().addAll(p, btn);
+        vb.getChildren().addAll(p, btns);
 
         StackPane root = new StackPane();
         root.getChildren().add(vb);
@@ -74,191 +62,41 @@ public class LaserCut extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println(gi.test());
+        System.out.println(gi.test("Test"));
         launch(args);
     }
 
-    private void drawShapes(GraphicsContext gc) {
-        gc.setFill(Color.GREEN);
-        gc.setStroke(Color.BLUE);
-        gc.setLineWidth(5);
-        gc.strokeLine(40, 10, 10, 40);
-        gc.fillOval(10, 60, 30, 30);
-        gc.strokeOval(60, 60, 30, 30);
-        gc.fillRoundRect(110, 60, 30, 30, 10, 10);
-        gc.strokeRoundRect(160, 60, 30, 30, 10, 10);
-        gc.fillArc(10, 110, 30, 30, 45, 240, ArcType.OPEN);
-        gc.fillArc(60, 110, 30, 30, 45, 240, ArcType.CHORD);
-        gc.fillArc(110, 110, 30, 30, 45, 240, ArcType.ROUND);
-        gc.strokeArc(10, 160, 30, 30, 45, 240, ArcType.OPEN);
-        gc.strokeArc(60, 160, 30, 30, 45, 240, ArcType.CHORD);
-        gc.strokeArc(110, 160, 30, 30, 45, 240, ArcType.ROUND);
-        gc.fillPolygon(new double[]{10, 40, 10, 40},
-                new double[]{210, 210, 240, 240}, 4);
-        gc.strokePolygon(new double[]{60, 90, 60, 90},
-                new double[]{210, 210, 240, 240}, 4);
-        gc.strokePolyline(new double[]{110, 140, 110, 140},
-                new double[]{210, 210, 240, 240}, 4);
+    public void print() {
+//        Printer printer = Printer.getDefaultPrinter();
+//        ObservableSet<Printer> allPrinters = Printer.getAllPrinters();
+//        for (Printer p : allPrinters) {
+//            if (p.getName().equalsIgnoreCase("Microsoft Print to PDF")) {
+//                printer = p;
+//            }
+//        }
 
-    }
-
-    private Path makePath() {
-        Path path = new Path();
-
-        MoveTo moveTo = new MoveTo();
-        moveTo.setX(0.0f);
-        moveTo.setY(0.0f);
-
-        HLineTo hLineTo = new HLineTo();
-        hLineTo.setX(70.0f);
-
-        QuadCurveTo quadCurveTo = new QuadCurveTo();
-        quadCurveTo.setX(120.0f);
-        quadCurveTo.setY(60.0f);
-        quadCurveTo.setControlX(100.0f);
-        quadCurveTo.setControlY(0.0f);
-
-        LineTo lineTo = new LineTo();
-        lineTo.setX(175.0f);
-        lineTo.setY(55.0f);
-
-        ArcTo arcTo = new ArcTo();
-        arcTo.setX(50.0f);
-        arcTo.setY(50.0f);
-        arcTo.setRadiusX(50.0f);
-        arcTo.setRadiusY(50.0f);
-
-        path.getElements().add(moveTo);
-        path.getElements().add(hLineTo);
-        path.getElements().add(quadCurveTo);
-        path.getElements().add(lineTo);
-        path.getElements().add(arcTo);
-
-        path.setStroke(Color.rgb(255, 0, 0));
-        path.setStrokeWidth(1);
-        path.setFill(null);
-
-        return path;
-
-    }
-
-    public void print(final Node node) {
-        Printer printer = Printer.getDefaultPrinter();
-        ObservableSet<Printer> allPrinters = Printer.getAllPrinters();
-        for (Printer p : allPrinters) {
-            if (p.getName().equalsIgnoreCase("Microsoft Print to PDF")) {
-                printer = p;
+        int i = gi.startPrint(null);
+        if (i != 0) {
+            System.out.println("startPrint failed "+i);
+            return;
+        }
+        for (GraphicsObject go : lgo) {
+            if (go.nodeClass == Line.class) {
+                Line line = (Line) go.node;
+                gi.drawLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
             }
         }
+        gi.endPrint();
 
-        PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
-        double scaleX = pageLayout.getPrintableWidth() / node.getBoundsInParent().getWidth();
-        double scaleY = pageLayout.getPrintableHeight() / node.getBoundsInParent().getHeight();
-        node.getTransforms().add(new Scale(scaleX, scaleY));
-
-        PrinterJob job = PrinterJob.createPrinterJob();
-        if (job != null) {
-            boolean success = job.printPage(node);
-            if (success) {
-                job.endJob();
-            }
-        }
     }
-    
+
     void parse() {
         InputStream is = LaserCut.class.getResourceAsStream("test.dxf");
         DXFReader dfr = new DXFReader();
-        List<GraphicsObject> lgo = dfr.Read(is);
-        for (GraphicsObject go:lgo) {
-            this.group.getChildren().add(go.node);
+        this.lgo = dfr.Read(is);
+        for (GraphicsObject go : this.lgo) {
+            this.group.getChildren().add(go.node);  
         }
     }
 
-    void draw(HDC hdc) {
-//        Graphics * graphics = new Graphics(hdc);
-//        Pen * pen = new Pen(Color(255, 0, 0, 0));
-//        graphics -> DrawLine(pen, 50, 50, 350, 550);
-//        graphics -> DrawRectangle(pen, 50, 50, 300, 500);
-//        graphics -> DrawEllipse(pen, 50, 50, 300, 500);
-//        delete pen;
-//        delete graphics;
-    }
-
-    /*
-    
-
-void print(void) {
-	// Get a device context for the printer.
-	HDC hdc = getPrinterDC(NULL);
-	DOCINFO docInfo;
-	ZeroMemory(&docInfo, sizeof(docInfo));
-	docInfo.cbSize = sizeof(docInfo);
-	docInfo.lpszDocName = TEXT("GdiplusPrint");
-
-	StartDoc(hdc, &docInfo);
-	StartPage(hdc);
-
-	draw(hdc);
-
-	EndPage(hdc);
-	EndDoc(hdc);
-	DeleteDC(hdc);
-
-}
-
-HDC getPrinterDC(TCHAR *printerName) {
-	DWORD numprinters;
-	DWORD defprinter = 0;
-	DWORD               dwSizeNeeded = 0;
-	DWORD               dwItem;
-	LPPRINTER_INFO_2    printerinfo = NULL;
-
-	// Get buffer size
-
-	EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 2, NULL, 0, &dwSizeNeeded, &numprinters);
-
-	// allocate memory
-	//printerinfo = (LPPRINTER_INFO_2)HeapAlloc ( GetProcessHeap (), HEAP_ZERO_MEMORY, dwSizeNeeded );
-	printerinfo = (LPPRINTER_INFO_2)new char[dwSizeNeeded];
-
-	if (EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,      // what to enumerate
-		NULL,           // printer name (NULL for all)
-		2,              // level
-		(LPBYTE)printerinfo,        // buffer
-		dwSizeNeeded,       // size of buffer
-		&dwSizeNeeded,      // returns size
-		&numprinters            // return num. items
-	) == 0)
-	{
-		numprinters = 0;
-	}
-
-	{
-		DWORD size = 0;
-
-		// Get the size of the default printer name.
-		GetDefaultPrinter(NULL, &size);
-		if (size)
-		{
-			// Allocate a buffer large enough to hold the printer name.
-			TCHAR* buffer = new TCHAR[size];
-
-			// Get the printer name.
-			GetDefaultPrinter(buffer, &size);
-
-			for (dwItem = 0; dwItem < numprinters; dwItem++)
-			{
-				if (!wcscmp(buffer, printerinfo[dwItem].pPrinterName))
-					defprinter = dwItem;
-			}
-			delete buffer;
-		}
-	}
-
-	return CreateDC(NULL, printerName == NULL ? printerinfo[defprinter].pPrinterName : printerName, NULL, NULL);
-}
-
-
-
-     */
 }

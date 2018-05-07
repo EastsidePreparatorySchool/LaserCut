@@ -1,0 +1,1 @@
+copy graphicsinterface\x64\debug\graphicsinterface.dll lasercut\src\win32-x86-64

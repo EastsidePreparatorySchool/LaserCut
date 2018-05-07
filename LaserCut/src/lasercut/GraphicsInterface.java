@@ -7,6 +7,7 @@ package lasercut;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.WString;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HDC;
@@ -17,15 +18,15 @@ import com.sun.jna.platform.win32.WinDef.ULONG;
  * @author gmein
  */
 public interface GraphicsInterface extends Library {
-    
-     GraphicsInterface INSTANCE = (GraphicsInterface) Native.loadLibrary("GraphicsInterface.dll", GraphicsInterface.class);
 
-    void draw(HDC hdc);
+    GraphicsInterface INSTANCE = (GraphicsInterface) Native.loadLibrary("GraphicsInterface.dll", GraphicsInterface.class);
 
-    void print();
+    void drawLine(double x1, double y1, double x2, double y2);
 
-    HDC getPrinterDC(ULONG number);
-    
-    int test();
+    int startPrint(String printerName);
+
+    void endPrint();
+
+    ULONG test(String str);
+
 }
-
