@@ -34,6 +34,10 @@ import javafx.stage.Stage;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HDC;
+import java.io.InputStream;
+import java.util.List;
+import javafx.scene.Group;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -42,28 +46,27 @@ import com.sun.jna.platform.win32.WinDef.HDC;
 public class LaserCut extends Application {
     
     static GraphicsInterface gi = GraphicsInterface.INSTANCE;
+    static Group group;
 
     @Override
     public void start(Stage primaryStage) {
         Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
+        btn.setText("Parse");
+        btn.setOnAction((e)->parse());
+        VBox vb = new VBox();
+        group = new Group();
+        StackPane p = new StackPane (group);
+        p.setMinSize(300, 300);
+        vb.getChildren().addAll(p, btn);
 
         StackPane root = new StackPane();
-        root.getChildren().add(btn);
+        root.getChildren().add(vb);
 
-        Scene scene = new Scene(root, 300, 250);
+        Scene scene = new Scene(root, 300, 350);
 
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("EPS DXF Laser Cutting Tool");
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setTitle("EPS Laser Cutting Tool");
         WinDef.HWND hWnd = User32.INSTANCE.FindWindow(null, "EPS Laser Cutting Tool");
     }
 
@@ -159,6 +162,15 @@ public class LaserCut extends Application {
             if (success) {
                 job.endJob();
             }
+        }
+    }
+    
+    void parse() {
+        InputStream is = LaserCut.class.getResourceAsStream("test.dxf");
+        DXFReader dfr = new DXFReader();
+        List<GraphicsObject> lgo = dfr.Read(is);
+        for (GraphicsObject go:lgo) {
+            this.group.getChildren().add(go.node);
         }
     }
 
