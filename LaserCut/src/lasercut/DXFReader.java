@@ -5,12 +5,10 @@
  */
 package lasercut;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import javafx.scene.Group;
 
 /**
  *

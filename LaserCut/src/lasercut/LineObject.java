@@ -5,7 +5,6 @@
  */
 package lasercut;
 
-import com.sun.jna.platform.win32.WinDef.HDC;
 import java.util.Scanner;
 import javafx.scene.shape.Line;
 
