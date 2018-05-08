@@ -14,4 +14,6 @@ import javafx.scene.Node;
 abstract public class GraphicsObject {
     Class nodeClass;
     Node node;
+    
+    abstract void permanentTranslate(double x, double y);
 }

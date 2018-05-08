@@ -66,4 +66,13 @@ public class LineObject extends GraphicsObject {
         // should not get here
         return 0;
     }
+    
+    @Override
+    void permanentTranslate(double x, double y){
+        Line line = (Line) this.node;
+        line.setStartX(line.getStartX()+x);
+        line.setStartY(line.getStartY()+y);
+        line.setEndX(line.getEndX()+x);
+        line.setEndY(line.getEndY()+y);
+    }
 }
