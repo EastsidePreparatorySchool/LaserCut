@@ -23,4 +23,12 @@ public class BoundsRectangle extends GraphicsObject {
         r.setX(r.getX() + x);
         r.setY(r.getY() + y);
     }
+
+    @Override
+    void flip90() {
+        Rectangle r = (Rectangle) this.node;
+        double newX = r.getY();
+        r.setY(-r.getX());
+        r.setX(newX);
+    }
 }

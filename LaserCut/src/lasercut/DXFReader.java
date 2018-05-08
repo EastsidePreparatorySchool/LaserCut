@@ -19,11 +19,7 @@ import javafx.scene.shape.Rectangle;
  */
 public class DXFReader {
 
-    double minX = 0;
-    double minY = 0;
-    double maxX = 0;
-    double maxY = 0;
-    boolean initialized = false;
+   
 
     List<GraphicsObject> Read(InputStream is) {
         LinkedList<GraphicsObject> objects = new LinkedList<>();
@@ -54,33 +50,10 @@ public class DXFReader {
                     }
                     break;
             }
-            if (!objects.isEmpty()) {
-                Bounds b = objects.getLast().node.boundsInLocalProperty().get();
-                if (initialized) {
-                    maxX = Math.max(maxX, b.getMaxX());
-                    maxY = Math.max(maxY, b.getMaxY());
-                    minX = Math.min(minX, b.getMinX());
-                    minY = Math.min(minY, b.getMinY());
-                } else {
-                    maxX = b.getMaxX();
-                    maxY = b.getMaxY();
-                    minX = b.getMinX();
-                    minY = b.getMinY();
-                    initialized = true;
-                }
-            }
+          
         }
 
-        if (!objects.isEmpty()) {
-            Rectangle r = new Rectangle(minX, minY, maxX-minX, maxY-minY);
-            r.setStroke(Color.AZURE);
-            r.setFill(null);
-            objects.add(new BoundsRectangle(r));
-            
-            for (GraphicsObject go:objects) {
-                go.permanentTranslate(-minX, -minY);
-            }
-        }
+     
         return objects;
     }
 }

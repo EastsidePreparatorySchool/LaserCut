@@ -16,4 +16,5 @@ abstract public class GraphicsObject {
     Node node;
     
     abstract void permanentTranslate(double x, double y);
+    abstract void flip90();
 }

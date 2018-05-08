@@ -14,7 +14,6 @@ import javafx.scene.shape.Line;
  */
 public class LineObject extends GraphicsObject {
 
-
     LineObject() {
         nodeClass = Line.class;
     }
@@ -66,13 +65,30 @@ public class LineObject extends GraphicsObject {
         // should not get here
         return 0;
     }
-    
+
     @Override
-    void permanentTranslate(double x, double y){
+    void permanentTranslate(double x, double y) {
         Line line = (Line) this.node;
-        line.setStartX(line.getStartX()+x);
-        line.setStartY(line.getStartY()+y);
-        line.setEndX(line.getEndX()+x);
-        line.setEndY(line.getEndY()+y);
+        line.setStartX(line.getStartX() + x);
+        line.setStartY(line.getStartY() + y);
+        line.setEndX(line.getEndX() + x);
+        line.setEndY(line.getEndY() + y);
     }
+
+    @Override
+    void flip90() {
+        Line line = (Line) this.node;
+//        System.out.println("Start before " + line.getStartX() + "," + line.getStartY());
+        double newX = line.getStartY();
+        double newY = -line.getStartX();
+        line.setStartX(newX);
+        line.setStartY(newY);
+
+        newX = line.getEndY();
+        newY = -line.getEndX();
+        line.setEndX(newX);
+        line.setEndY(newY);
+//        System.out.println("Start after " + line.getStartX() + "," + line.getStartY());
+    }
+
 }
