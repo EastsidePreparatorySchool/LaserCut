@@ -7,7 +7,6 @@ package lasercut;
 
 import com.sun.jna.platform.win32.WinDef.HDC;
 import java.util.Scanner;
-import javafx.scene.Group;
 import javafx.scene.shape.Line;
 
 /**
@@ -34,7 +33,7 @@ public class LineObject extends GraphicsObject {
             int code = Integer.parseInt(line.trim());
             if (code == 0) {
                 this.node = new Line(x1, y1, x2, y2);
-                System.out.println("Line ("+x1+","+y1+"),("+x2+","+y2+")");
+                //System.out.println("Line ("+x1+","+y1+"),("+x2+","+y2+")");
                 return 0;
             }
 
@@ -67,10 +66,5 @@ public class LineObject extends GraphicsObject {
 
         // should not get here
         return 0;
-    }
-
-    @Override
-    void draw(HDC hdc) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

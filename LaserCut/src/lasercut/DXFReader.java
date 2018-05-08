@@ -41,7 +41,7 @@ public class DXFReader {
 //                    }
                     break;
                 default:
-                    System.out.println("Unknown token '" + value + "' ignored");
+                    //System.out.println("Unknown token '" + value + "' ignored");
                     if (sc.hasNext()) {
                         nextCode = Integer.parseInt(sc.nextLine().trim());
                     }

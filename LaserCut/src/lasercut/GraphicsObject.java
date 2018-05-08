@@ -5,7 +5,6 @@
  */
 package lasercut;
 
-import com.sun.jna.platform.win32.WinDef.HDC;
 import javafx.scene.Node;
 
 /**
@@ -15,6 +14,4 @@ import javafx.scene.Node;
 abstract public class GraphicsObject {
     Class nodeClass;
     Node node;
-    abstract void draw(HDC hdc);
-    
 }

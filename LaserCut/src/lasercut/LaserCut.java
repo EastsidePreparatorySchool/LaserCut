@@ -7,20 +7,30 @@ package lasercut;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.collections.ObservableSet;
-import javafx.print.Printer;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinDef.HDC;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 /**
@@ -32,25 +42,71 @@ public class LaserCut extends Application {
     static GraphicsInterface gi = GraphicsInterface.INSTANCE;
     static Group group;
     static List<GraphicsObject> lgo;
+    static ListView<String> files;
+    static double margin = 5;
+    static double scaleZing = 1.0068;
+    static String folder = "c:\\users\\laser cutter\\desktop\\laser dropbox";
+//    static String folder = "c:\\users\gmein\desktop";
 
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button("Parse");
-        btn.setOnAction((e) -> parse());
-        Button btn2 = new Button("Print");
-        btn2.setOnAction((e) -> print());
-        HBox btns = new HBox(btn, btn2);
+        StackPane p = new StackPane();
 
-        VBox vb = new VBox();
+        // preview
+        AnchorPane preview = new AnchorPane();
+        preview.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         group = new Group();
-        StackPane p = new StackPane(group);
-        p.setMinSize(300, 300);
+        AnchorPane.setTopAnchor(group, 10.0);
+        AnchorPane.setLeftAnchor(group, 10.0);
+
+        preview.getChildren().addAll(group/*, h, v*/);
+        preview.setOnMouseClicked((e) -> {
+            p.getChildren().remove(preview);
+        });
+
+        // buttons
+//        Button btn = new Button("Preview");
+//        btn.setOnAction((e) -> {
+//            parse();
+//            p.getChildren().add(preview);
+//        });
+//        btn.setAlignment(Pos.BOTTOM_CENTER);
+        Button btn2 = new Button("<- Print to Epilog Zing");
+        btn2.setOnAction((e) -> print("Epilog Engraver WinX64 Zing", scaleZing));
+        btn2.setAlignment(Pos.BOTTOM_LEFT);
+
+        Button btn3 = new Button("Print to Universal ->");
+//        btn3.setOnAction((e) -> print("Microsoft Print to PDF", 1.0));
+        btn3.setOnAction((e) -> print("PLS6.150D", 1.0));
+        btn3.setAlignment(Pos.BOTTOM_RIGHT);
+
+        AnchorPane btns = new AnchorPane();
+        btns.setMinWidth(500);
+        btns.getChildren().addAll(btn2, btn3);
+        AnchorPane.setLeftAnchor(btn2, 0.0);
+        AnchorPane.setRightAnchor(btn3, 0.0);
+
+        // listview
+        files = new ListView<>();
+        files.setOnMouseClicked((click) -> {
+
+            if (click.getClickCount() == 2) {
+                parse();
+                p.getChildren().add(preview);
+            }
+        });
+        p.getChildren().add(files);
+        populateFileList(files);
+        p.setMinSize(500, 300);
+
+        // all together
+        VBox vb = new VBox();
         vb.getChildren().addAll(p, btns);
 
-        StackPane root = new StackPane();
-        root.getChildren().add(vb);
-
-        Scene scene = new Scene(root, 300, 350);
+        Scene scene = new Scene(vb, 500, 350);
+        scene.setOnKeyTyped((e) -> {
+            p.getChildren().remove(preview);
+        });
 
         primaryStage.setTitle("EPS DXF Laser Cutting Tool");
         primaryStage.setScene(scene);
@@ -66,24 +122,31 @@ public class LaserCut extends Application {
         launch(args);
     }
 
-    public void print() {
-//        Printer printer = Printer.getDefaultPrinter();
-//        ObservableSet<Printer> allPrinters = Printer.getAllPrinters();
-//        for (Printer p : allPrinters) {
-//            if (p.getName().equalsIgnoreCase("Microsoft Print to PDF")) {
-//                printer = p;
-//            }
-//        }
+    InputStream openFile(String name) {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(name);
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found");
+        }
 
-        int i = gi.startPrint(null);
+        return is;
+    }
+
+    public void print(String printerName, double scale) {
+        String fname = this.files.getSelectionModel().getSelectedItem();
+        fname = folder + "\\" + fname.substring(0, fname.indexOf("\t"));
+        parseStream(openFile(fname));
+
+        int i = gi.startPrint(printerName);
         if (i != 0) {
-            System.out.println("startPrint failed "+i);
+            System.out.println("startPrint failed with code " + i);
             return;
         }
         for (GraphicsObject go : lgo) {
             if (go.nodeClass == Line.class) {
                 Line line = (Line) go.node;
-                gi.drawLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+                gi.drawLine(line.getStartX() * scale + margin, line.getStartY() * scale + margin, line.getEndX() * scale + margin, line.getEndY() * scale + margin);
             }
         }
         gi.endPrint();
@@ -91,12 +154,55 @@ public class LaserCut extends Application {
     }
 
     void parse() {
-        InputStream is = LaserCut.class.getResourceAsStream("test.dxf");
+        String fname = this.files.getSelectionModel().getSelectedItem();
+        //fname = "c:\\users\\laser cutter\\desktop\\laser dropbox\\" + fname.substring(0, fname.indexOf("\t"));
+        fname = folder + "\\" + fname.substring(0, fname.indexOf("\t"));
+        System.out.println(fname);
+        parseStream(openFile(fname));
+        this.group.getChildren().clear();
+        Line h = new Line(-margin -10.0, -margin, 500.0, -margin);
+        h.setStroke(Color.RED);
+        h.setStrokeWidth(1);
+        Line v = new Line(-margin, -margin-10.0, -margin, 300.0);
+        v.setStroke(Color.RED);
+        v.setStrokeWidth(1);
+        this.group.getChildren().addAll(h, v);
+
+        for (GraphicsObject go : this.lgo) {
+            this.group.getChildren().add(go.node);
+        }
+    }
+
+    void parseStream(InputStream is) {
         DXFReader dfr = new DXFReader();
         this.lgo = dfr.Read(is);
-        for (GraphicsObject go : this.lgo) {
-            this.group.getChildren().add(go.node);  
+    }
+
+    void populateFileList(ListView<String> lv) {
+        //String myDirectoryPath = "c:\\users\\laser cutter\\desktop\\laser dropbox";
+        File dir = new File(folder);
+        File[] directoryListing = dir.listFiles();
+        Arrays.sort(directoryListing, (a, b) -> (int) (a.lastModified() - b.lastModified()));
+        ObservableList<String> items = FXCollections.observableArrayList();
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                String name = child.getName().toLowerCase();
+                if (name.endsWith(".dxf")) {
+                    name += "\t\t" + df.format(child.lastModified());
+                    items.add(name);
+                }
+            }
+        } else {
+            // Handle the case where dir is not really a directory.
+            // Checking dir.isDirectory() above would not be sufficient
+            // to avoid race conditions with another process that deletes
+            // directories.
         }
+
+        lv.setItems(items);
+
     }
 
 }
