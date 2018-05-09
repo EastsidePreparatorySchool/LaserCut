@@ -31,10 +31,12 @@ public class Cuts extends Group {
         }
         normalizeToOrigin();
         super.getChildren().add(bounds.node);
+        updateMargins();
+    }
 
+    void updateMargins() {
         super.setTranslateX(marginX);
         super.setTranslateY(marginY);
-
     }
 
     void flip90() {
@@ -45,7 +47,6 @@ public class Cuts extends Group {
         normalizeToOrigin();
         super.getChildren().add(bounds.node);
     }
-
 
     private void normalizeToOrigin() {
 
@@ -80,7 +81,6 @@ public class Cuts extends Group {
         bounds = new BoundsRectangle(r);
 
 //        System.out.println("bounds: (" + minX + "," + minY + "):(" + maxX + "," + maxY + ")");
-
         // adjust everything to 0,0
         for (GraphicsObject go : objects) {
             go.permanentTranslate(-minX, -minY);

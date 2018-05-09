@@ -33,24 +33,30 @@ public class UI_FudgeParams extends GridPane {
         super.add(textField, 4, 0);
 
         label = new Label("Margin X:");
-        textField = new TextField("5.0");
-        textField.setOnAction((e) -> {
+        TextField marginXTF = new TextField("5.0");
+        marginXTF.focusedProperty().addListener((e) -> {
+            LaserCut.marginX = Double.parseDouble(marginXTF.getText());
+            LaserCut.cuts.updateMargins();
+            LaserCut.pv.layout();
         });
         super.add(label, 0, 1);
-        super.add(textField, 1, 1);
-
-        label = new Label("Margin Y:");
-        textField = new TextField("5.0");
-        textField.setOnAction((e) -> {
+        super.add(marginXTF, 1, 1);   label = new Label("Margin X:");
+        
+        TextField marginYTF = new TextField("5.0");
+        marginYTF.focusedProperty().addListener((e) -> {
+            LaserCut.marginY = Double.parseDouble(marginYTF.getText());
+            LaserCut.cuts.updateMargins();
+            LaserCut.pv.layout();
         });
         super.add(label, 3, 1);
-        super.add(textField, 4, 1);
+        super.add(marginYTF, 4, 1);
+
+        
 
         Button b = new Button("Zoom in");
         b.setOnAction((e) -> {
             if (LaserCut.pv != null) {
-                LaserCut.pv.getContent().setScaleX(LaserCut.pv.getScaleX() * 1.3);
-                LaserCut.pv.getContent().setScaleX(LaserCut.pv.getScaleX() * 1.3);
+                LaserCut.pv.zoomIn();
             }
         });
         super.add(b, 0, 2);
@@ -58,8 +64,7 @@ public class UI_FudgeParams extends GridPane {
         b = new Button("Zoom out");
         b.setOnAction((e) -> {
             if (LaserCut.pv != null) {
-                LaserCut.pv.getContent().setScaleX(LaserCut.pv.getScaleX() / 1.3);
-                LaserCut.pv.getContent().setScaleX(LaserCut.pv.getScaleX() / 1.3);
+                LaserCut.pv.zoomOut();
             }
         });
         super.add(b, 2, 2);

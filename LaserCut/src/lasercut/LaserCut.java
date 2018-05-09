@@ -27,6 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
@@ -113,6 +114,7 @@ public class LaserCut extends Application {
                 btn2.setDisable(false);
                 btn3.setDisable(false);
                 pv = new Preview(cuts);
+//                pv = new ZoomableScrollPane(cuts);
                 p.getChildren().add(pv);
 
             }
