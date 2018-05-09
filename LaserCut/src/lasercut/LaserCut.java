@@ -11,8 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,17 +26,9 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.control.ListView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 /**
@@ -65,6 +55,8 @@ public class LaserCut extends Application {
 //    static String folder = "c:\\users\gmein\desktop";
     static WatchDir wd;
     static Thread t = null;
+    
+    static Preview pv;
 
     @Override
     public void start(Stage primaryStage) {
@@ -120,27 +112,21 @@ public class LaserCut extends Application {
                 parse();
                 btn2.setDisable(false);
                 btn3.setDisable(false);
-                Preview pv = new Preview(cuts);
+                pv = new Preview(cuts);
                 p.getChildren().add(pv);
 
             }
         });
 
-        // on clicking preview, go back to list, disable printing
-        p.setOnMouseClicked((e) -> {
-//            p.getChildren().remove(1);
-//            btn2.setDisable(true);
-//            btn3.setDisable(true);
-            cuts.flip90();
-        });
-
+   
         // on pressing ESC in preview, go back to list, disable printing
         scene.setOnKeyTyped((e) -> {
             if (e.getCharacter().equals("\u001b")) {
-                if (p.getChildren().size() > 1) {
-                    p.getChildren().remove(1);
+                if (pv != null) {
+                    p.getChildren().remove(pv);
                     btn2.setDisable(true);
                     btn3.setDisable(true);
+                    pv = null;
                 }
             }
         });
