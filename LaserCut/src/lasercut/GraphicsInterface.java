@@ -23,6 +23,6 @@ public interface GraphicsInterface extends Library {
 
     void endPrint();
 
-    ULONG test(String str);
+    int test(String str);
 
 }

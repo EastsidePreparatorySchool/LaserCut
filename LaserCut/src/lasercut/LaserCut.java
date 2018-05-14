@@ -5,6 +5,7 @@
  */
 package lasercut;
 
+import com.sun.jna.platform.win32.WinDef.ULONG;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
@@ -22,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -49,7 +51,7 @@ public class LaserCut extends Application {
     static double scaleX = 1.0;
     static double scaleY = 1.0;
 
-    static double scaleZing = 1.0068;
+    static double scaleZing = 1.0019;
     static double scaleUniversal = 1.0;
 
     static String folder = "c:\\users\\laser cutter\\desktop\\laser dropbox";
@@ -83,8 +85,8 @@ public class LaserCut extends Application {
         btn2.setDisable(true);
 
         Button btn3 = new Button("Print to Universal ->");
-        btn3.setOnAction((e) -> print("Microsoft Print to PDF", 1.0));
-//        btn3.setOnAction((e) -> print("PLS6.150D", scaleUniversal));
+//        btn3.setOnAction((e) -> print("Microsoft Print to PDF", 1.0));
+        btn3.setOnAction((e) -> print("PLS6.150D", scaleUniversal));
         btn3.setAlignment(Pos.BOTTOM_RIGHT);
         btn3.setDisable(true);
 
@@ -142,7 +144,15 @@ public class LaserCut extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println(gi.test("Test"));
+        if (gi.test("Test") != 123456) {
+            System.out.println("Could not load graphics DLL <press enter to quit>");
+            Scanner sc = new Scanner (System.in);
+            sc.nextLine();
+            return;
+        }
+        
+        System.out.println("Initializing, please ignore this window ...");
+        
         launch(args);
         if (t != null) {
             t.interrupt();
