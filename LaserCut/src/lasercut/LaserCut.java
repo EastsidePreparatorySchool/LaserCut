@@ -5,7 +5,6 @@
  */
 package lasercut;
 
-import com.sun.jna.platform.win32.WinDef.ULONG;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
@@ -216,7 +215,7 @@ public class LaserCut extends Application {
         //String myDirectoryPath = "c:\\users\\laser cutter\\desktop\\laser dropbox";
         File dir = new File(folder);
         File[] directoryListing = dir.listFiles();
-        Arrays.sort(directoryListing, (a, b) -> (int) (a.lastModified() - b.lastModified()));
+        Arrays.sort(directoryListing, (a, b) ->  Long.signum(a.lastModified() - b.lastModified()));
         ObservableList<String> items = FXCollections.observableArrayList();
         DateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 

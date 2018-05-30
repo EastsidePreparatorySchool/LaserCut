@@ -12,12 +12,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import static lasercut.LaserCut.marginX;
 import static lasercut.LaserCut.marginY;
+import static lasercut.LaserCut.scaleX;
+import static lasercut.LaserCut.scaleY;
 
 /**
  *
  * @author gmein
  */
-public class Cuts extends Group {
+public final class Cuts extends Group {
 
     List<GraphicsObject> objects;
     BoundsRectangle bounds;
@@ -26,17 +28,20 @@ public class Cuts extends Group {
         this.objects = list;
 
         super.getChildren().clear();
-        for (GraphicsObject go : objects) {
+        objects.forEach((go) -> {
             super.getChildren().add(go.node);
-        }
+        });
         normalizeToOrigin();
         super.getChildren().add(bounds.node);
-        updateMargins();
+        updateMarginsAndScale();
     }
 
-    void updateMargins() {
+    void updateMarginsAndScale() {
+        // to do: translate further beacuse scale, need to add part of object boundary
         super.setTranslateX(marginX);
         super.setTranslateY(marginY);
+        super.setScaleX(scaleX);
+        super.setScaleY(scaleY);
     }
 
     void flip90() {
